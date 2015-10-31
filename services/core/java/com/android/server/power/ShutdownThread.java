@@ -52,6 +52,8 @@ import com.android.server.pm.PackageManagerService;
 
 import android.util.Log;
 import android.view.WindowManager;
+import java.lang.reflect.Method;
+import dalvik.system.PathClassLoader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -142,13 +144,25 @@ public final class ShutdownThread extends Thread {
             }
         }
 
+        boolean showRebootOption = false;
+        String[] defaultActions = context.getResources().getStringArray(
+                com.android.internal.R.array.config_globalActionsList);
+        for (int i = 0; i < defaultActions.length; i++) {
+            if (defaultActions[i].equals("reboot")) {
+                showRebootOption = true;
+                break;
+            }
+        }
         final int longPressBehavior = context.getResources().getInteger(
                         com.android.internal.R.integer.config_longPressOnPowerBehavior);
-        final int resourceId = mRebootSafeMode
+        int resourceId = mRebootSafeMode
                 ? com.android.internal.R.string.reboot_safemode_confirm
                 : (longPressBehavior == 2
                         ? com.android.internal.R.string.shutdown_confirm_question
                         : com.android.internal.R.string.shutdown_confirm);
+        if (showRebootOption && !mRebootSafeMode) {
+            resourceId = com.android.internal.R.string.reboot_confirm;
+        }
 
         Log.d(TAG, "Notifying thread to start shutdown longPressBehavior=" + longPressBehavior);
 
@@ -160,7 +174,9 @@ public final class ShutdownThread extends Thread {
             sConfirmDialog = new AlertDialog.Builder(context)
                     .setTitle(mRebootSafeMode
                             ? com.android.internal.R.string.reboot_safemode_title
-                            : com.android.internal.R.string.power_off)
+                            : showRebootOption
+                                    ? com.android.internal.R.string.reboot_title
+                                    : com.android.internal.R.string.power_off)
                     .setMessage(resourceId)
                     .setPositiveButton(com.android.internal.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -619,6 +635,7 @@ public final class ShutdownThread extends Thread {
      * @param reason reason for reboot
      */
     public static void rebootOrShutdown(final Context context, boolean reboot, String reason) {
+        deviceRebootOrShutdown(reboot, reason);
         if (reboot) {
             Log.i(TAG, "Rebooting, reason: " + reason);
             PowerManagerService.lowLevelReboot(reason);
@@ -720,6 +737,27 @@ public final class ShutdownThread extends Thread {
         }
         if (!done[0]) {
             Log.w(TAG, "Timed out waiting for uncrypt.");
+        }
+    }
+
+    private static void deviceRebootOrShutdown(boolean reboot, String reason) {
+        Class<?> cl;
+        String deviceShutdownClassName = "com.qti.server.power.ShutdownOem";
+        try {
+            cl = Class.forName(deviceShutdownClassName);
+            Method m;
+                try {
+                    m = cl.getMethod("rebootOrShutdown", new Class[] {boolean.class, String.class});
+                    m.invoke(cl.newInstance(), reboot, reason);
+                } catch (NoSuchMethodException ex) {
+                    Log.e(TAG, "rebootOrShutdown method not found in class " + deviceShutdownClassName);
+                } catch (Exception ex) {
+                    Log.e(TAG, "Unknown exception hit while trying to invode rebootOrShutdown");
+                }
+        } catch (ClassNotFoundException e) {
+            Log.e(TAG, "Unable to find class " + deviceShutdownClassName);
+        } catch (Exception e) {
+            Log.e(TAG, "Unknown exception while trying to invoke rebootOrShutdown");
         }
     }
 }

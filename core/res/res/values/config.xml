@@ -1175,6 +1175,9 @@
         -->
     </string-array>
 
+    <!-- Component name of the combo network location provider. -->
+    <string name="config_comboNetworkLocationProvider" translatable="false">com.qualcomm.location</string>
+
     <!-- Boolean indicating if current platform supports bluetooth SCO for off call
     use cases -->
     <bool name="config_bluetooth_sco_off_call">true</bool>
@@ -1710,6 +1713,9 @@
     <!-- Configure wifi tcp buffersizes in the form:
          rmem_min,rmem_def,rmem_max,wmem_min,wmem_def,wmem_max -->
     <string name="config_wifi_tcp_buffers" translatable="false">524288,1048576,2097152,262144,524288,1048576</string>
+    <!-- Configuration to send sms on 1x when UE is attached to eHRPD and there is an active
+         1xRTT voice call, irrespective of IMS registration state  -->
+    <bool name="config_send_sms1x_on_voice_call">true</bool>
 
     <!-- Whether WiFi display is supported by this device.
          There are many prerequisites for this feature to work correctly.
@@ -2270,4 +2276,48 @@
     <string-array name="config_cell_retries_per_error_code">
     </string-array>
 
+    <!-- Whether cpu boost is enabled for AppLaunch -->
+    <bool name="config_enableCpuBoostForAppLaunch">false</bool>
+    <integer name="launchboost_timeout_param">0</integer>
+    <integer-array name="launchboost_param_value"/>
+
+    <!-- Whether disablepacking is enabled or not -->
+    <bool name="config_disablePacking">false</bool>
+    <integer name="disablepacking_timeout_param">0</integer>
+    <integer-array name="launchboost_packing_param_value"/>
+
+    <!-- Whether cpu boost is enabled for animation. -->
+    <bool name="config_enablePerfBoostForAnimation">false</bool>
+    <integer name="animationboost_timeout_param">0</integer>
+    <integer-array name="animationboost_param_value"/>
+
+    <!-- Whether cpu boost is enabled for overscroller fling. -->
+    <bool name="config_enableCpuBoostForOverScrollerFling">false</bool>
+    <integer name="flingboost_timeout_param">0</integer>
+    <integer-array name="flingboost_param_value"/>
+
+    <!-- Whether cpu boost is enabled for horizontal scroll. -->
+    <bool name="config_enableCpuBoostForScroller">false</bool>
+    <integer name="scrollboost_timeout_param">0</integer>
+    <integer-array name="scrollboost_param_value"/>
+
+    <!-- Activities list for boost -->
+    <string-array translatable="false" name="boost_activityList">
+    </string-array>
+
+    <!-- Activity scroll boost params -->
+    <integer name="ascrollboost_timeout">0</integer>
+    <integer-array name="ascrollboost_param_value"/>
+
+   <!-- Configuration to play sms ringtone during MO/MT call -->
+   <bool name="config_sms_ringtone_incall">false</bool>
+    <!-- IpReachability monitor enable/Disable -->
+    <bool translatable="false" name="config_wifi_ipreachability_monitor">false</bool>
+
+    <!-- Configuration that determines if ACTIVATE_REJECT_GGSN is to be treated as
+         a permanent error -->
+    <bool translatable="false" name="config_reject_ggsn_perm_failure">true</bool>
+    <!-- Configuration that determines if PROTOCOL_ERRORS is to be treated as a
+         permanent error -->
+    <bool translatable="false" name="config_protocol_errors_perm_failure">true</bool>
 </resources>
